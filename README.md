@@ -1,5 +1,9 @@
 # 19 Progressive Web Applications (PWA): Text Editor
 
+## Introduciton
+
+As a user I want to use a text editor both online and offline.
+
 ## User Story
 
 ```md
@@ -23,3 +27,4 @@ npm run start:dev
 ##
 For more information go to:
 https://github.com/LuisLaplace/jate-text
+https://github.com/LuisLaplace/jate-text/tree/main
