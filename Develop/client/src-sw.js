@@ -1,12 +1,11 @@
-const { offlineFallback, warmStrategyCache } = require('workbox-recipes');
 const { CacheFirst, StaleWhileRevalidate } = require('workbox-strategies');
 const { registerRoute } = require('workbox-routing');
 const { CacheableResponsePlugin } = require('workbox-cacheable-response');
 const { ExpirationPlugin } = require('workbox-expiration');
 const { precacheAndRoute } = require('workbox-precaching/precacheAndRoute');
-
+// Precaching the manifest
 precacheAndRoute(self.__WB_MANIFEST);
-
+// Page caching strategy
 const pageCache = new CacheFirst({
   cacheName: 'page-cache',
   plugins: [
@@ -18,48 +17,26 @@ const pageCache = new CacheFirst({
     }),
   ],
 });
-
+// Warming up cache
 warmStrategyCache({
   urls: ['/index.html', '/'],
   strategy: pageCache,
 });
-
+// Register route for page navigation
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
-
 // TODO: Implement asset caching
 registerRoute(
-  ({ request }) => request.destination === 'image',
-  new CacheFirst({
-    cacheName: 'image-cache',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-      new ExpirationPlugin({
-        maxEntries: 60,
-        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
-      }),
-    ],
-  })
-);
-
-registerRoute(
-  ({ request }) => request.destination === 'style' || request.destination === 'script' || request.destination === 'worker',
+  // Callback function to filter the requests we want to cache
+  ({ request }) => ['style', 'script', 'worker'].includes(request.destination),
   new StaleWhileRevalidate({
     cacheName: 'asset-cache',
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
       }),
+      new ExpirationPlugin({
+        maxAgeSeconds: 30 * 24 * 60 * 60, // Cache for 30 days
+      }),
     ],
   })
 );
-
-// event listeners for install and activate events
-self.addEventListener('install', (event) => {
-  console.log('Service worker installing...');
-});
-
-self.addEventListener('activate', (event) => {
-  console.log('Service worker activating...');
-});

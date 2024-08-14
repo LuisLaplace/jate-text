@@ -10,7 +10,8 @@
   "author": "2U",
   "license": "UNLICENSED",
   "dependencies": {
-    "concurrently": "^6.2.1"
+    "concurrently": "^6.2.1",
+    "idb": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
